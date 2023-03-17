@@ -1,0 +1,2 @@
+site para aprender mais sobre ponteiros
+https://www.programiz.com/cpp-programming/memory-management
