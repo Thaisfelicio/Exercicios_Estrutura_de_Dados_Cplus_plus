@@ -5,37 +5,54 @@ encontrado e a referência do vetor onde a busca será efetuada. A função retornar
 caso não encontre o item, ou retornará o índice, caso o encontre
 */
 #include<iostream>
+#include<locale.h>
 
 using namespace std;
 
-void busca_pesquisaLR(int *vetor[], int valor_buscado);
+const int TAMANHO = 5;
+
+void inserir_dados(int *vetor);
+int busca_pesquisaLR(int *vetor, int valor_buscado, int tamanho_vetor, int indice = 0);
 
 int main(){
 	//se não encontrar o valor retorna -1
 	//se encontrar o valor retorna o indice do item
-	int vetor_numeros[], numero;
+	setlocale(LC_ALL,"Portuguese");
+	int vetor_numeros[TAMANHO];
+	int numero_buscado;
 	
-	cout<<"Digite o número a ser buscado no vetor: ";
-	cin>> numero;
-	cout<<endl;
+	inserir_dados(vetor_numeros);
+	cout<<"Digite o numero a ser buscado no vetor: ";
+	cin>>numero_buscado;
 	
-	busca_pesquisaLR(vetor_numeros, numero);
+	int indice = busca_pesquisaLR(vetor_numeros, numero_buscado, TAMANHO);
+	if(indice == -1)
+		cout<<"Valor "<< numero_buscado <<" não encontrado"<<endl;
+	else
+		cout<<"o numero esta na posição "<< indice <<" do vetor"<<endl;
+		
+	return 0;
 }
 
-void busca_pesquisaLR(int *vetor[], int valor_buscado){
-	int i = 0, achou = 0;
+void inserir_dados(int *vetor){
+	int i;
 	
-	while(i <= 9 && achou == 0 && n >= vetor[i])
+	for(i = 0; i < TAMANHO; i++)
 	{
-		if(vetor[i] == valor_buscado)
-			achou = 1;
-		else
-			i++;
+		cout<<"Digite o "<< i + 1<<" número a ser inserido no vetor: ";
+		cin>> vetor[i];
+		cout<<endl;
 	}
-	if(achou == 0)
-		cout<<"Numero nao encontrado no vetor"<<endl;
-	else
-		cout<<"Numero encontrado na posicao "<< i + 1<<endl;
-	
-//	getch();
 }
+
+int busca_pesquisaLR(int *vetor, int valor_buscado, int tamanho_vetor, int indice){
+	if(indice == tamanho_vetor)
+		return -1;
+		
+	else if(vetor[indice] == valor_buscado)
+		return indice;
+	
+	else
+		return busca_pesquisaLR(vetor, valor_buscado, tamanho_vetor, indice+1);
+}
+
