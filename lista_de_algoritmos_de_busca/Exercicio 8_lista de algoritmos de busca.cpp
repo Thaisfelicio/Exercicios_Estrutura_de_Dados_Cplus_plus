@@ -19,12 +19,12 @@ const int colunas = 4;
 //máximo de 25.000 numeros em uma matriz de 500x50
 
 int gerar_numeroAleatorio(int minimo, int maximo);
-void preencher_matriz(int **matriz, int linhas, int colunas, int minimo, int maximo);
-void matriz_para_array(int **matriz, int Nlinhas, int Ncolunas, int *array);
-void array_para_matriz(int *array, int Nlinhas, int Ncolunas, int **matriz);
+void preencher_matriz(int *matriz, int linhas, int colunas, int minimo, int maximo);
+void matriz_para_array(int *matriz, int num_linhas, int num_colunas, int *array);
+void array_para_matriz(int *array, int linhas, int colunas, int *matriz);
 void trocar(int *array, int i, int j, int colunas);
 void ordenar_array_quickSort(int *array, int esquerda, int direita, int colunas);
-void imprimir_matriz(int **matriz, int linhas, int colunas);
+void imprimir_matriz(int *matriz, int linhas, int colunas);
 
 int main(){
 	const int valorMaximo_numeros = 12;
@@ -34,27 +34,17 @@ int main(){
 	//usar a função binaria para buscar um numero
 	//indicar a quantidade de elementos iguais ao sorteado na matriz
 	//inidcar a posiçao ou posições que esta o numero buscado, neste formato (i, j), exemplo: [3,4]
-//	int matriz_utilizada[linhas][colunas];
-	int **matriz_utilizada = new int*[linhas];
-    for (int i = 0; i < linhas; i++) {
-        matriz_utilizada[i] = new int[colunas];
-        for (int j = 0; j < colunas; j++) {
-            matriz_utilizada[i][j] = i*colunas + j + 1;
-        }
-    }
-//	int array[linhas * colunas];
-	int *array = new int[linhas*colunas];
+	int matriz_utilizada[linhas][colunas];
+	int array[linhas * colunas];
 	
 	gerar_numeroAleatorio(1, valorMaximo_numeros);
-	preencher_matriz(matriz_utilizada, linhas, colunas, 1, valorMaximo_numeros);
-	cout<<"matriz antes"<<endl;
-	imprimir_matriz(matriz_utilizada, linhas, colunas);
-	cout<<"matriz depois"<<endl;
-	matriz_para_array(matriz_utilizada,linhas, colunas, array);
-	ordenar_array_quickSort(array, 0, linhas*colunas -1, colunas);
+	preencher_matriz(&matriz_utilizada[0][0], linhas, colunas, 1, valorMaximo_numeros);
+	imprimir_matriz(&matriz_utilizada[0][0], linhas, colunas);
 	 
 	cout<<endl<<endl;
-	imprimir_matriz(matriz_utilizada, linhas, colunas);
+	matriz_para_array(&matriz_utilizada[0][0], linhas, colunas, array);
+	ordenar_array_quickSort(array, 0, linhas*colunas-1, colunas);
+	imprimir_matriz(&matriz_utilizada[0][0], linhas, colunas);
 	
 	return 0;
 }
@@ -69,27 +59,31 @@ int gerar_numeroAleatorio(int minimo, int maximo){
 	return rand() % (maximo - minimo) + minimo;
 }
 
-void preencher_matriz(int **matriz, int linhas, int colunas, int minimo, int maximo){
+void preencher_matriz(int *matriz, int linhas, int colunas, int minimo, int maximo){
 	for(int i = 0; i < linhas; i++)
 		for(int j = 0; j < colunas; j++)
-			matriz[i][j] = gerar_numeroAleatorio(minimo, maximo);
+			matriz[i * colunas + j] = gerar_numeroAleatorio(minimo, maximo);
 }
 
-void matriz_para_array(int **matriz, int Nlinhas, int Ncolunas, int *array){
-	int i, j;
-	for(i = 0; i < Nlinhas; i++)
-	{
-		for(j = 0; j < Ncolunas; j++)
-			array[i * Ncolunas + j] = matriz[i][j];
+void matriz_para_array(int *matriz, int num_linhas, int num_colunas, int *array){
+	int i, j, array[num_linhas*num_colunas], index = 0, tamanho;
+	
+	for(int i = 0; i < linhas; i++) {
+	  for(int j = 0; j < colunas; j++) {
+	    array[index] = matriz[i][j];
+	    index++;
+	  }
 	}
 }
 
-void array_para_matriz(int *array, int Nlinhas, int Ncolunas, int **matriz){
-	int i, j;
-	for(i = 0; i < Nlinhas; i++)
-	{
-		for(j = 0; j < Ncolunas; j++)
-			matriz[i][j] = array[i * Ncolunas + j];
+void array_para_matriz(int *array, int linhas, int colunas, int *matriz){
+	int i, j, matriz[linhas][colunas], index = 0;
+
+	for(int i = 0; i < linhas; i++) {
+	  for(int j = 0; j < colunas; j++) {
+	    matriz[i][j] = array[index];
+	    index++;
+	  }
 	}
 }
 //função auxiliar da quicksort
@@ -121,7 +115,7 @@ void ordenar_array_quickSort(int *array, int esquerda, int direita, int colunas)
         ordenar_array_quickSort(array, i, direita, colunas);
 }
 
-void imprimir_matriz(int **matriz, int linhas, int colunas){
+void imprimir_matriz(int *matriz, int linhas, int colunas){
 	int i, j;
 	
 	for(i = 0; i < linhas; i++)
