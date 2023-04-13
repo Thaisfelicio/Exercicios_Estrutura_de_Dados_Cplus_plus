@@ -1,164 +1,136 @@
 /*
-2. Implemente um programa estruturado e recursivo para pesquisa binária. Faça uma
-função de busca chamada pesquisaBR que receba como parâmetro o valor a ser
-encontrado e a referência do vetor onde a busca será efetuada. A função retornará -1,
-caso não encontre o item, ou retornará o índice, caso o encontre.
+2. Implemente um programa estruturado e recursivo para pesquisa binaria. Faça uma
+funcao de busca chamada pesquisaBR que receba como parametro o valor a ser
+encontrado e a referência do vetor onde a busca sera efetuada. A função retornara -1,
+caso nao encontre o item, ou retornara o indice, caso o encontre.
 */
 
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-void preencheVector(vector <int> &n, int tamanho)
-{
-	int i, num;
-	
-	for(i=0; i<tamanho; i++)
-	{
-		cout << 1+i << ": ";
-		cin >> num;		
-		n.push_back(num);
-		cout << endl;
-	}
-}
+const string ERRO = "\aInvalido. Digite novamente";
 
-void apresentaVector(vector <int> &n)
-{
-	int i;
-	
-	for(i=0; i<n.size(); i++)
-	{
-		cout << n[i] << endl;
-	}
-}
+void cabecalho();
 
-int menu()
-{
-	int escolha;
-	
-	do{
-		cout << "1 - Preencher vetor" << endl;
-		cout << "2 - Ordenar numeros" << endl;
-		cout << "3 - Pesquisar" << endl;
-		cout << "0 - sair." << endl << endl;
-		
-		cout << "Digite sua escolha: ";
-		cin >> escolha;
-		if(escolha < 0 || escolha > 3)
-			cout <<"\tValor invalido!" << endl << endl;
-	}while(escolha < 0 || escolha > 3);
-	
-	return escolha;
-}
+void preencheVetor(int* vetor, int tamanho);
 
-void insertionSort(vector <int> &n)
-{
-	int i, j, eleito;
+void imprimeVetor(int* vetor, int tamanho);
 
-	for (i=1; i<n.size(); i++)
-	{
-		eleito = n[i];
+void insertionSort(int* vetor, int tamanho);
 
-		j = i - 1;
-		
-		while ( j >= 0 && n[j] > eleito)
-		{
-			n[j+1] = n[j];
-
-			j = j - 1;
-		}
-		
-		n[j+1] = eleito;
-	}
-}
-
-int pesquisaBR(vector <int> &n, int busca)
-{
-	int inicio, fim, meio, achou;
-	
-	achou = 0;
-	inicio = 0;
-	fim = n.size();
-	meio = (inicio+fim)/2;
-	
-	while(inicio < fim && achou == 0)
-	{
-		if(n[meio] == busca)
-			achou = 1;
-		else
-		{
-			if(busca < n[meio])
-				fim = meio-1;
-			else
-			{
-				inicio = meio+1;
-				meio = (inicio+fim)/2;
-			}
-		}
-	}
-	
-	if(achou == 0)
-		return -1;
-	else
-		return meio;
-}
+int pesquisaBR(int* vetor, int busca, int inicio, int fim);
 
 int main()
 {
-	vector <int> num;
-	int qtd, opcao, preenchido = 0, ordenado = 0, busca = 0, resultado;	
+	int tamanho, *pVetor, busca, resultado;
+	char continua;
+	
+	cabecalho();
 	
 	do{
-		opcao = menu();
-		
-		switch(opcao)
-		{
-			case 1:
-				system("cls");
-				do{
-					cout << "Quantidade de posicoes para preencher: ";
-					cin >> qtd;
-				}while(qtd <= 0);
-				
-				preencheVector(num, qtd);
-				preenchido = 1;
-			break;
-			
-			case 2:
-				system("cls");
-				if(preenchido == 1)
-				{
-					cout << "Ordenando usando Insertion Sort..." << endl << endl;
-					insertionSort(num);
-					ordenado = 1;
-					cout << endl << "Vetor ordenado" << endl;
-				}
-				else
-					cout << "Primeiro preencha o vetor" << endl;
-			break;
-			
-			case 3:
-				system("cls");
-				if(ordenado == 1)
-				{
-					cout << "Qual numero procurar? " << endl;
-					cin >> busca;
-					
-					resultado = pesquisaBR(num, busca);
-					if(resultado == -1)
-						cout << "Numero nao encontrado no vetor" << endl << endl;
-					else
-						cout << "Numero encontrado no indice: " << resultado+1 << endl;
-				}
-				else
-					cout << "Primeiro preencha/ordene o vetor" << endl;
-			break;
-			
-			default:
-				cout << "Saindo..." << endl;
-		}
-	}while(opcao != '0');
+		cout << "Qual o tamanho do vetor?" << endl;
+		cin >> tamanho;
+		if(tamanho <= 0)
+			cout << ERRO << endl << endl;
+	}while(tamanho <= 0);
 	
+	pVetor = new int(tamanho);
+			
+	preencheVetor(pVetor, tamanho);
+	
+	insertionSort(pVetor, tamanho);
+	
+	imprimeVetor(pVetor, tamanho);
+	
+	do{
+		cout << "Pesquisar qual numero?" << endl;
+		cin >> busca;
+		
+		resultado = pesquisaBR(pVetor, busca, 0, tamanho);
+		
+		if(resultado == -1)
+			cout << "Numero nao encontrado no vetor" << endl << endl;
+		else
+			cout << "Numero encontrado no indice: " << resultado << endl << endl;
+		
+		do{
+			cout << "Pesquisar outro numero? (S/N)" << endl;
+			cin >> continua;
+			continua = toupper(continua);
+			if(continua != 'N' && continua != 'S')
+				cout << ERRO << endl << endl;
+		}while(continua != 'N' && continua != 'S');						
+	}while(continua != 'N');
+	
+	cout << "Saindo ...";
+		
+	delete(pVetor);
+		
 	return 0;
+}
+
+void cabecalho()
+{
+	cout << "\t ++ Programa de Pesquisa Binaria ++ " << endl;
+}
+
+void preencheVetor(int* vetor, int tamanho)
+{
+	int i;
+	
+	cout << "Preenchendo vetor ..." << endl ;
+	
+	for(i=0; i<tamanho; i++)
+	{
+		cout << "[" << i << "]: ";
+		cin >> vetor[i];
+	}
+	
+	cout << "Vetor preenchido ..." << endl << endl;
+}
+
+void imprimeVetor(int* vetor, int tamanho)
+{
+	int i;
+	
+	cout << "Vetor" << endl << endl;
+	
+	for(i=0; i<tamanho; i++)
+	{
+		cout << vetor[i] << endl;
+	}
+}
+
+void insertionSort(int* vetor, int tamanho)
+{
+	int i, j, eleito;
+
+	for (i=1; i<tamanho; i++)
+	{
+		eleito = vetor[i];
+
+		j = i - 1;
+		
+		while ( j >= 0 && vetor[j] > eleito)
+		{
+			vetor[j+1] = vetor[j];
+
+			j = j - 1;
+		}	
+		vetor[j+1] = eleito;
+	}
+}
+
+int pesquisaBR(int* vetor, int busca, int inicio, int fim)
+{	
+	int meio = (inicio+fim)/2;
+	if(inicio > fim)
+		return -1;
+	else if(vetor[meio] == busca)
+		return meio;
+	else if(vetor[meio] < busca)
+		return pesquisaBR(vetor, busca, meio+1, fim);
+	else
+		return pesquisaBR(vetor, busca, inicio, meio-1);
 }
